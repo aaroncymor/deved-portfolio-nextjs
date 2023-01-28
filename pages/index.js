@@ -1,39 +1,130 @@
-import Layout from "../layout/Layout";
-import Image from "next/image";
-import {
-  AiFillTwitterCircle,
-  AiFillLinkedin,
-  AiFillYoutube,
-} from "react-icons/ai";
+import { gsap } from "gsap/dist/gsap";
+import ScrollTrigger from "gsap/dist/ScrollTrigger";
 
-import deved from "../public/dev-ed-wave.png";
+import { useState, useRef, useEffect } from "react";
+import { useLocomotiveScroll } from "react-locomotive-scroll";
+import { useThemeContext } from "../context/theme";
+
+import IntroductionAnimation from "../components/IntroductionAnimation";
+import Skills from "../components/Skills";
+
+import Image from "next/image";
+
+import {
+  FaAws,
+  FaHtml5,
+  FaLinux,
+  FaPhp,
+  FaPython,
+  FaReact,
+  FaWordpress
+} from "react-icons/fa";
+
+import {
+  SiCss3,
+  SiDjango,
+  SiJavascript,
+  SiMysql,
+  SiPostgresql,
+  SiTailwindcss,
+} from "react-icons/si";
+
+
+gsap.registerPlugin(ScrollTrigger);
+
+const About = () => {
+  return (
+    <div className="about h-screen w-full max-w-[1440px] mx-auto flex flex-row items-center justify-between font-mono">
+      <div className="about__intro-text ml-8 lg:ml-16">
+        <p className="about__intro typing--1st">Hi! I am Aa</p>
+        <p className="about__intro typing--2nd">Nice to meet you!</p>
+        <p className="about__intro typing--3rd">I'm a Fullstack Developer.</p>
+      </div>
+    </div>
+  );
+}
+
+const ContactMe = () => {
+    <div>
+      Contact Me
+    </div>
+}
 
 const Home = () => {
+
+  const { introLoading } = useThemeContext();
+  const [introDone, setIntroDone] = introLoading;
+
+  const introAnimationRef = useRef();
+
+  const { scroll } = useLocomotiveScroll();
+  const homeRef = useRef(null);
+  const aboutRef = useRef(null);
+
+  const tl = useRef();
+  const q = gsap.utils.selector(homeRef);
+
+  setIntroDone(true);
+
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+
+      tl.current && tl.current.progress(0).kill();
+
+      const typing1 = q(".typing--1st");
+      const typing2 = q(".typing--2nd");
+      const typing3 = q(".typing--3rd");
+
+      tl.current = gsap.timeline()
+        .to(typing1, {
+          display: 'block'
+        })
+        .to(typing1, {
+          delay: 2,
+          border: 'none'
+        })
+        .to(typing2, {
+          display: 'block'
+        })
+        .to(typing2, {
+          delay: 2,
+          border: 'none'
+        })
+        .to(typing3, {
+          display: 'block'
+        })
+        .to(typing3, {
+          delay: 3,
+          border: 'none'
+        });
+
+    }, homeRef);
+
+    return () => {
+      ctx && ctx.revert();
+    };
+
+  }, []);
+
   return (
-    <Layout>
-      <section className="about bg-white px-10 dark:bg-gray-900 md:px-20 lg:px-40">
-        <div className="text-center p-10 py-10">
-          <h2 className="text-5xl py-2 text-teal-600 font-medium dark:text-teal-400 md:text-6xl">
-            Dimitri Marco
-          </h2>
-          <h3 className="text-2xl py-2 dark:text-white md:text-3xl">
-            Developer and designer.
-          </h3>
-          <p className="text-md py-5 leading-8 text-gray-800 dark:text-gray-200 max-w-xl mx-auto md:text-xl">
-            Freelancer providing services for programming and design content
-            needs. Join me down below and let's get cracking!
-          </p>
-          <div className="text-5xl flex justify-center gap-16 py-3 text-gray-600 dark:text-gray-400">
-            <AiFillTwitterCircle />
-            <AiFillLinkedin />
-            <AiFillYoutube />
-          </div>
-          <div className="mx-auto bg-gradient-to-b from-teal-500 rounded-full w-80 h-80 relative overflow-hidden mt-20 md:h-96 md:w-96">
-            <Image src={deved} layout="fill" objectFit="cover" />
-          </div>
-        </div>
+    <>
+      {!introDone
+        ? (<IntroductionAnimation
+            introAnimationRef={introAnimationRef}
+            introDone={introDone}
+            setIntroDone={setIntroDone}
+          />)
+        : (<></>)
+      }
+      <section
+        data-scroll-section
+        className="home bg-white dark:bg-gray-900"
+        ref={homeRef}
+      >
+        <About ref={aboutRef} />
+        <Skills />
       </section>
-    </Layout>
+    </>
   );
 };
 

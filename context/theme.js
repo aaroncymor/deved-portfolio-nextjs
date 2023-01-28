@@ -3,11 +3,15 @@ import { createContext, useContext, useState } from "react";
 const Context = createContext();
 
 const ThemeProvider = ({ children }) => {
-  const [darkMode, setDarkMode] = useState(false);
+  const [darkMode, setDarkMode] = useState(true);
+  const [introDone, setIntroDone] = useState(false);
 
   return (
     <Context.Provider
-      value={[darkMode, setDarkMode]}
+      value={{
+        theme: [darkMode, setDarkMode],
+        introLoading: [introDone, setIntroDone]
+      }}
     >
       {children}
     </Context.Provider>
